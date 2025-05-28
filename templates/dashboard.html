@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="card p-8 bg-white shadow-md rounded-lg">
+    <div class="flex justify-between items-center mb-8 border-b pb-6">
+        <div>
+            <h2 class="text-3xl font-bold text-gray-800">User Dashboard</h2>
+            <p class="text-gray-600 mt-1">Manage your digital documents</p>
+        </div>
+        <a href="{{ url_for('logout') }}" 
+           class="bg-red-500 text-white px-6 py-2.5 rounded-lg hover:bg-red-600 transition duration-200 flex items-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M3 3a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4a1 1 0 0 0-1-1H3zm11.707 4.707a1 1 0 0 0-1.414-1.414L10 9.586 6.707 6.293a1 1 0 0 0-1.414 1.414L8.586 11l-3.293 3.293a1 1 0 1 0 1.414 1.414L10 12.414l3.293 3.293a1 1 0 0 0 1.414-1.414L11.414 11l3.293-3.293z" clip-rule="evenodd"/>
+            </svg>
+            Logout
+        </a>
+    </div>
+    
+    <form method="POST" action="{{ url_for('save_details') }}" enctype="multipart/form-data" class="space-y-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2" for="aadhar_number">Aadhar Number</label>
+                    <input type="text" name="aadhar_number" id="aadhar_number" 
+                           value="{{ details[2] if details else '' }}" 
+                           class="form-input w-full p-3 border border-gray-300 rounded-lg focus:outline-none" 
+                           required placeholder="Enter your Aadhar number">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2" for="voter_id">Voter ID</label>
+                    <input type="text" name="voter_id" id="voter_id" 
+                           value="{{ details[4] if details else '' }}" 
+                           class="form-input w-full p-3 border border-gray-300 rounded-lg focus:outline-none" 
+                           required placeholder="Enter your Voter ID">
+                </div>
+            </div>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2" for="aadhar_image">Aadhar Image</label>
+                    <input type="file" name="aadhar_image" id="aadhar_image" 
+                           accept="image/*" class="form-input w-full p-3 border border-gray-300 rounded-lg focus:outline-none">
+                    {% if details and details[3] %}
+                        <img src="{{ url_for('static', filename='uploads/' + details[3]) }}" 
+                             class="mt-4 rounded-lg shadow-sm max-w-xs" alt="Aadhar Image">
+                    {% endif %}
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2" for="documents">Upload Documents (PDF/Images)</label>
+                    <input type="file" name="documents[]" id="documents" 
+                           accept=".pdf,image/*" class="form-input w-full p-3 border border-gray-300 rounded-lg focus:outline-none"
+                           multiple>
+                    <p class="text-sm text-gray-500 mt-1">You can upload multiple files (PDF, PNG, JPG, JPEG)</p>
+                </div>
+            </div>
+            <div class="col-span-1 md:col-span-2">
+                <label class="block text-sm font-medium text-gray-700 mb-2" for="education">Education Details</label>
+                <textarea name="education" id="education" 
+                          class="form-input w-full p-3 border border-gray-300 rounded-lg focus:outline-none resize-none" 
+                          rows="4" placeholder="Enter your education details">{{ details[5] if details else '' }}</textarea>
+            </div>
+        </div>
+        
+        <div class="pt-6 border-t">
+            <button type="submit" 
+                    class="w-full bg-blue-600 text-white py-3 px-4 rounded-lg font-medium hover:bg-blue-700 transition duration-200 transform hover:scale-[1.02] flex items-center justify-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M10 3a1 1 0 0 1 1 1v5h5a1 1 0 1 1 0 2h-5v5a1 1 0 1 1-2 0v-5H4a1 1 0 1 1 0-2h5V4a1 1 0 0 1 1-1z" clip-rule="evenodd"/>
+                </svg>
+                Save Details
+            </button>
+        </div>
+    </form>
+
+    {% if documents %}
+    <div class="mt-8 border-t pt-8">
+        <h3 class="text-xl font-semibold text-gray-800 mb-4">Your Documents</h3>
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Document Name</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Upload Date</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    {% for doc in documents %}
+                    <tr>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ doc[3] }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ doc[4].upper() }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ doc[5] }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
+                            <a href="{{ url_for('download_document', doc_id=doc[0]) }}" 
+                               class="text-blue-600 hover:text-blue-900 inline-flex items-center gap-1">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd"/>
+                                </svg>
+                                Download
+                            </a>
+                            <form action="{{ url_for('delete_document', doc_id=doc[0]) }}" method="POST" class="inline">
+                                <button type="submit" class="text-red-600 hover:text-red-900 inline-flex items-center gap-1"
+                                        onclick="return confirm('Are you sure you want to delete this document?')">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                                    </svg>
+                                    Delete
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

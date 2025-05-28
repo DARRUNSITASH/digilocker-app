@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block title %}Register{% endblock %}
+
+{% block content %}
+<div class="card p-8 max-w-md mx-auto">
+    <div class="text-center mb-8">
+        <h2 class="text-3xl font-bold text-gray-800">Create Account</h2>
+        <p class="text-gray-600 mt-2">Join our secure digital locker system</p>
+    </div>
+    <form method="POST" action="{{ url_for('register') }}" class="space-y-6">
+        <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2" for="username">Username</label>
+            <input type="text" name="username" id="username" 
+                   class="form-input w-full p-3 border border-gray-300 rounded-lg focus:outline-none" 
+                   required placeholder="Choose a username">
+        </div>
+        <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2" for="password">Password</label>
+            <input type="password" name="password" id="password" 
+                   class="form-input w-full p-3 border border-gray-300 rounded-lg focus:outline-none" 
+                   required placeholder="Choose a strong password">
+        </div>
+        <button type="submit" 
+                class="w-full bg-blue-600 text-white py-3 px-4 rounded-lg font-medium hover:bg-blue-700 transition duration-200 transform hover:scale-[1.02]">
+            Create Account
+        </button>
+    </form>
+    <p class="mt-6 text-center text-gray-600">
+        Already have an account? 
+        <a href="{{ url_for('index') }}" 
+           class="text-blue-600 font-medium hover:text-blue-700 transition duration-200">Sign In</a>
+    </p>
+</div>
+{% endblock %}
